@@ -1,6 +1,6 @@
 # Multi-Peer-WebRTC
 
-### Demo 
+### Demo:
   https://multi-peer-webrtc.herokuapp.com/
 
 ### Steps:
