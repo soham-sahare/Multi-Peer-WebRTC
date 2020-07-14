@@ -16,24 +16,36 @@
         }
         video{
             max-width: 100%;
-            width: 320px;
+            width: 400px;
             padding: 10px;
             margin: 10px;
         }
+        input[type=button]{
+            padding: 10px;
+            margin: 10px;
+        }
+        h1{
+            text-align: center;
+            padding: 10px;
+        }
     </style>
 </head>
-<body>
+<body onload="getLocalMedia();">
 
-    <h1>Multi Peer WebRTC</h1>
+    <h1>WebRTC</h1>
 
     <section>
-        <div class="videos">
-            <video id="localVideo" autoplay muted playsinline></video>
-        </div>
+        <video id="local" autoplay muted></video>
+        <div id="videos"></div>
+    </section>
+
+    <section>
+        <input type="button" value="Call" id="call">
+        <input type="button" value="Receive" id="receive">
     </section>
     
+    <script src="http://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="main.js"></script>
 
 </body>

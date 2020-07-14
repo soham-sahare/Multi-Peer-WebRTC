@@ -1,28 +1,46 @@
-const express = require("express") 
-const server = express() 
-const http = require("http").Server(server) 
-const io = require("socket.io")(http) 
+const express = require("express")
+const app = express()
+let http = require("http").Server(app)
 const port = process.env.PORT || 3000
+let io = require("socket.io")(http)
 
-server.use(express.static("public")) 
+app.use(express.static("public"))
 
 http.listen(port, () => {
-    console.log("Listening on PORT:"+port) 
-    console.log("http://localhost:"+port)
-}) 
+  console.log("Listening on Port :",port)
+  console.log("http://localhost:3000")
+})
 
-server.get("/public", function(req, res){
-    res.sendFile(__dirname + "/index.html") 
-}) 
+io.on("connection", (socket) => {
 
-io.on("connection", function (socket) {
-    io.sockets.emit("user-joined", {clients : Object.keys(io.sockets.clients().sockets), count : io.engine.clientsCount, joinedUserId : socket.id}) 
+    console.log("Client connected : " + socket.id);
 
-    socket.on("signaling", function(data){
-        io.to(data.toId).emit("signaling", { fromId: socket.id, ...data }) 
-    }) 
-
-    socket.on("disconnect", function(){
-        io.sockets.emit("user-left", socket.id)
+    socket.on("reqCall", ()=> {
+        console.log("Requesting : "+ socket.id)            
+        socket.broadcast.emit("reqCall", socket.id)
     })
-}) 
+
+    socket.on("resCall", (id) => {
+        console.log(socket.id +": Responsing: to" + id);
+        socket.to(id).emit("resCall", socket.id)
+    })
+    
+    socket .on("offer", (id, offer) => {
+        console.log(socket.id +": offering: to" + id);
+        socket.to(id).emit("offer", socket.id, offer)
+    })
+
+    socket.on("answer", (id, answer) => {
+        console.log(socket.id +": answering: to" + id);
+        socket.to(id).emit("answer", socket.id, answer)
+    })
+
+    socket.on("ice", (id, ice) => {
+        console.log(socket.id +": icing: to" + id);
+        socket.to(id).emit("ice", socket.id, ice)
+    })
+
+    socket.on("disconnect", () => {
+        console.log("Client disconnected : ", socket.id)
+    })
+})

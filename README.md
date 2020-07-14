@@ -1,7 +1,5 @@
-# Simple-WebRTC
-Multi Peer (mesh) WebRTC
-
+# Multi-Peer-WebRTC
 ### Steps :
   1) npm install
-  2) node app.js
+  2) node app.js / npm start
   3) Go to browser http://localhost:3000

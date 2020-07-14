@@ -1,163 +1,126 @@
-const localVideo = document.getElementById("localVideo") 
+const local = document.getElementById("local")
+const div = document.getElementById("videos")
 
-let localStream 
-let localUserId 
-let connections = [] 
+const call = document.getElementById("call")
+const recieve = document.getElementById("recieve")
+
+var localStream = null
+var peer = []
+
+const socket = io.connect(location.origin)
+
+const config    = {
+    "iceServers": [
+        {'urls' : "stun:stun.stunprotocol.org:3478"},
+        {'urls' : "stun:stun.l.google.com:19302"}
+    ]
+}
 
 const constraints = {
     video : true,
-    audio : true
-} 
+    audio : false
+}
 
-function startLocalStream(){
+function getLocalMedia(){
     navigator.mediaDevices.getUserMedia(constraints)
-        .then(getUserMediaSuccess)
-        .then(connectSocketToSignaling)
-        .catch(handleError) 
+    .then(stream => {
+        console.log("Got MediaStream:", stream)
+        local.srcObject = stream
+        localStream = stream
+    })
+    .catch(err => {
+        console.log("Error : ", err)
+    })
 }
 
-function getUserMediaSuccess(mediaStream){
-    localStream = mediaStream 
-    localVideo.srcObject = mediaStream 
+call.onclick = () => {
+    call.setAttribute("value", "Calling...")
+    socket.emit("reqCall")
 }
 
-function connectSocketToSignaling(){
-    const socket = io.connect("http://localhost:3000", {secure: true}) 
+socket.on("reqCall", (id) => {
 
-    socket.on("connect", () => {
+    console.log("Receiving : ", id)
 
-        localUserId = socket.id 
-        console.log("localUser", localUserId) 
+    receive.removeAttribute("disabled")
+    receive.setAttribute("value", "Receiving Call")
 
-        socket.on("user-joined", (data) => {
+    receive.onclick = () => {
+        receive.setAttribute("value", "Connecting...")
+        socket.emit("resCall", id)
+        makePeer(id)
+    }
+})
 
-            const clients = data.clients 
-            const joinedUserId = data.joinedUserId 
-            console.log(joinedUserId, " joined") 
+socket.on("resCall", (id) => {
 
-            if (Array.isArray(clients) && clients.length > 0){
-                clients.forEach((userId) => {
+    if(peer[id] == null){
+        console.log("Connected : ", id)
+        makePeerLocal(id)
+    }
+})
 
-                    if (!connections[userId]){
+function makePeer(id){
+    peer[id] = new RTCPeerConnection(config)
 
-                        connections[userId] = new RTCPeerConnection(constraints) 
-                        connections[userId].onicecandidate = () => {
+    peer[id].addStream(localStream)
+    peer[id].ontrack = getRemoteStream
 
-                            if (event.candidate){
-                                console.log(socket.id, " Send candidate to ", userId) 
-                                socket.emit("signaling", { type: "candidate", candidate: event.candidate, toId: userId }) 
-                            }
-                        } 
+    peer[id].onconnectionstatechange = (event) => {
 
-                        connections[userId].onaddstream = () => {
-                            gotRemoteStream(event, userId) 
-                        } 
-
-                        connections[userId].addStream(localStream) 
-                    }
-                }) 
-
-                if (data.count >= 2){
-
-                    connections[joinedUserId].createOffer(offerOptions).then((description) => {
-
-                        connections[joinedUserId].setLocalDescription(description).then(() => {
-
-                            console.log(socket.id, " Send offer to ", joinedUserId)
-                            
-                            socket.emit("signaling", {
-                                toId: joinedUserId,
-                                description: connections[joinedUserId].localDescription,
-                                type: "sdp"
-                            }) 
-
-                        })
-                        .catch(handleError) 
-                    }) 
-                }
-            }
-        }) 
-
-        socket.on("user-left", (userId) => {
-            let video = document.querySelector("[data-socket='" + userId + "']") 
-            video.parentNode.removeChild(video) 
-        }) 
-
-        socket.on("signaling", (data) => {
-            gotMessageFromSignaling(socket, data) 
-        }) 
-    }) 
+        if(peer[id].connectionstate === "connected"){
+            connection = true
+            console.log("Peer connected: ", id)  
+        }
+        call.setAttribute("hidden", true)
+        receive.setAttribute("value", "Connected")
+    }
 }
 
-function gotRemoteStream(event, userId){
+function getRemoteStream(event){
+    console.log("Getting Remote Stream...")
 
-    let remoteVideo  = document.createElement("video") 
-
-    remoteVideo.setAttribute("data-socket", userId) 
-    remoteVideo.srcObject = event.stream 
-    remoteVideo.autoplay = true 
-    remoteVideo.playsinline = true 
-    document.querySelector(".videos").appendChild(remoteVideo) 
+    var remote = document.createElement("video")
+    remote.setAttribute("autoplay", true)
+    remote.srcObject = event.streams[0]
+    div.appendChild(remote)
 }
 
-const offerOptions = {
-    offerToReceiveVideo: 1,
-} 
+async function makePeerLocal(id){
+    makePeer(id)
 
-function gotMessageFromSignaling(socket, data){
-    const fromId = data.fromId 
-    if (fromId !== localUserId){
-        switch (data.type){
+    const offer = await peer[id].createOffer()
+    await peer[id].setLocalDescription(offer)
 
-            case "candidate":
+    socket.emit("offer", id, offer)
 
-                console.log(socket.id, " Receive Candidate from ", fromId) 
+    peer[id].onicecandidate = (event) => {
 
-                if (data.candidate){
-                    gotIceCandidate(fromId, data.candidate) 
-                }
-                break 
-
-            case "sdp":
-
-                if (data.description){
-                    console.log(socket.id, " Receive sdp from ", fromId) 
-
-                    connections[fromId].setRemoteDescription(new RTCSessionDescription(data.description))
-
-                        .then(() => {
-
-                            if (data.description.type === "offer"){
-                                connections[fromId].createAnswer()
-
-                                    .then((description) => {
-                                        connections[fromId].setLocalDescription(description).then(() => {
-                                            
-                                            console.log(socket.id, " Send answer to ", fromId) 
-                                            socket.emit("signaling", {
-                                                type: "sdp",
-                                                toId: fromId,
-                                                description: connections[fromId].localDescription
-                                            }) 
-                                        }) 
-                                    })
-                                    .catch(handleError) 
-                            }
-                        })
-                        .catch(handleError) 
-                }
-                break 
+        if(event.candidate){
+            socket.emit("ice", id, event.candidate)
         }
     }
 }
 
-function gotIceCandidate(fromId, candidate){
-    connections[fromId].addIceCandidate(new RTCIceCandidate(candidate)).catch(handleError) 
-}
+socket.on("offer", async function(id, offer){
 
-function handleError(e){
-    console.log(e) 
-    alert("Something went wrong") 
-}
+    if(peer[id] != null){
+        await peer[id].setRemoteDescription(new RTCSessionDescription(offer))
+        const answer = await peer[id].createAnswer()
+        await peer[id].setLocalDescription(answer)
+        socket.emit("answer", id, answer)        
+    }
+})
 
-startLocalStream() 
+socket.on("answer", (id, answer) => {
+
+    if(peer[id] != null){
+        peer[id].setRemoteDescription(new RTCSessionDescription(answer))
+    }
+})
+
+socket.on("ice", (id, ice) => {
+
+    console.log("Got ICE Candidate")
+    peer[id].addIceCandidate(new RTCIceCandidate(ice))
+})
