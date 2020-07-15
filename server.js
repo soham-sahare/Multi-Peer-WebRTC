@@ -15,32 +15,32 @@ io.on("connection", (socket) => {
 
     console.log("Client connected : " + socket.id);
 
-    socket.on("reqCall", ()=> {
+    socket.on("reqCall", () => {
         console.log("Requesting : "+ socket.id)            
         socket.broadcast.emit("reqCall", socket.id)
     })
 
     socket.on("resCall", (id) => {
-        console.log(socket.id +": Responsing: to" + id);
+        console.log(socket.id +": Responsing To" + id);
         socket.to(id).emit("resCall", socket.id)
     })
     
     socket .on("offer", (id, offer) => {
-        console.log(socket.id +": offering: to" + id);
+        console.log(socket.id +": Offering To" + id);
         socket.to(id).emit("offer", socket.id, offer)
     })
 
     socket.on("answer", (id, answer) => {
-        console.log(socket.id +": answering: to" + id);
+        console.log(socket.id +": Answering To" + id);
         socket.to(id).emit("answer", socket.id, answer)
     })
 
     socket.on("ice", (id, ice) => {
-        console.log(socket.id +": icing: to" + id);
+        console.log(socket.id +": Icing To" + id);
         socket.to(id).emit("ice", socket.id, ice)
     })
 
     socket.on("disconnect", () => {
-        console.log("Client disconnected : ", socket.id)
+        console.log("Client Disconnected : ", socket.id)
     })
 })
