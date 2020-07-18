@@ -69,7 +69,6 @@ function makePeer(id){
     peer[id].onconnectionstatechange = (event) => {
 
         if(peer[id].connectionstate === "connected"){
-            connection = true
             console.log("Peer connected: ", id)  
         }
         call.setAttribute("hidden", true)
