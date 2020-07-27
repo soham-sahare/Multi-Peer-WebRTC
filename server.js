@@ -13,7 +13,7 @@ http.listen(port, () => {
 
 io.on("connection", (socket) => {
 
-    console.log("Client connected : " + socket.id);
+    console.log("Client connected : " + socket.id) 
 
     socket.on("reqCall", () => {
         console.log("Requesting : "+ socket.id)            
@@ -21,26 +21,26 @@ io.on("connection", (socket) => {
     })
 
     socket.on("resCall", (id) => {
-        console.log(socket.id +": Responsing To" + id);
+        console.log(socket.id +": Responsing To" + id) 
         socket.to(id).emit("resCall", socket.id)
     })
     
     socket .on("offer", (id, offer) => {
-        console.log(socket.id +": Offering To" + id);
+        console.log(socket.id +": Offering To" + id) 
         socket.to(id).emit("offer", socket.id, offer)
     })
 
     socket.on("answer", (id, answer) => {
-        console.log(socket.id +": Answering To" + id);
+        console.log(socket.id +": Answering To" + id) 
         socket.to(id).emit("answer", socket.id, answer)
     })
 
     socket.on("ice", (id, ice) => {
-        console.log(socket.id +": Icing To" + id);
+        console.log(socket.id +": Icing To" + id) 
         socket.to(id).emit("ice", socket.id, ice)
     })
 
     socket.on("disconnect", () => {
-        console.log("Client Disconnected : ", socket.id)
+        console.log("Client Disconnected :", socket.id)
     })
 })
