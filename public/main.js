@@ -9,7 +9,7 @@ var peer = []
 
 const socket = io.connect(location.origin)
 
-const config    = {
+const config = {
     "iceServers": [
         {'urls' : "stun:stun.stunprotocol.org:3478"},
         {'urls' : "stun:stun.l.google.com:19302"}
@@ -35,10 +35,10 @@ function getLocalMedia(){
 
 call.onclick = () => {
     call.setAttribute("value", "Calling...")
-    socket.emit("reqCall")
+    socket.emit("request_call")
 }
 
-socket.on("reqCall", (id) => {
+socket.on("request_call", (id) => {
 
     console.log("Receiving : ", id)
 
@@ -47,12 +47,12 @@ socket.on("reqCall", (id) => {
 
     receive.onclick = () => {
         receive.setAttribute("value", "Connecting...")
-        socket.emit("resCall", id)
+        socket.emit("response_call", id)
         makePeer(id)
     }
 })
 
-socket.on("resCall", (id) => {
+socket.on("response_call", (id) => {
 
     if(peer[id] == null){
         console.log("Connected : ", id)
@@ -64,7 +64,25 @@ function makePeer(id){
     peer[id] = new RTCPeerConnection(config)
 
     peer[id].addStream(localStream)
-    peer[id].ontrack = getRemoteStream
+
+    if(document.getElementById("videos").getElementsByTagName("video").length == 1){
+        alert(document.getElementById("videos").getElementsByTagName("video").length)
+        document.getElementById("videos").style.gridTemplateColumns = "50% 50%"
+    }
+    else if(document.getElementById("videos").getElementsByTagName("video").length == 2){
+        alert(document.getElementById("videos").getElementsByTagName("video").length)
+        document.getElementById("videos").style.gridTemplateColumns = "33% 33% 33%"
+    }
+    
+    var remote = document.createElement("video")
+    remote.setAttribute("id", id)
+    remote.setAttribute("autoplay", true)
+    div.appendChild(remote)
+
+    peer[id].ontrack = (event) => {
+        console.log("Getting Remote Stream...")
+        remote.srcObject = event.streams[0]
+    }
 
     peer[id].onconnectionstatechange = (event) => {
 
@@ -74,15 +92,6 @@ function makePeer(id){
         call.setAttribute("hidden", true)
         receive.setAttribute("value", "Connected")
     }
-}
-
-function getRemoteStream(event){
-    console.log("Getting Remote Stream...")
-
-    var remote = document.createElement("video")
-    remote.setAttribute("autoplay", true)
-    remote.srcObject = event.streams[0]
-    div.appendChild(remote)
 }
 
 async function makePeerLocal(id){
@@ -122,4 +131,9 @@ socket.on("ice", (id, ice) => {
 
     console.log("Got ICE Candidate")
     peer[id].addIceCandidate(new RTCIceCandidate(ice))
+})
+
+socket.on("delete", (id) => {
+    var elem = document.getElementById(id)
+    elem.remove()
 })

@@ -9,16 +9,27 @@
             padding: 0;
             margin: 0;
         }
+        body{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
         section{
             display: flex;
             align-items: center;
             justify-content: center;
         }
+        #videos{
+            display: grid;
+            align-items: center;
+            justify-content: space-around;
+        }
         video{
-            max-width: 100%;
             width: 400px;
             padding: 10px;
             margin: 10px;
+            border: 2px solid blueviolet;
         }
         input[type=button]{
             padding: 10px;
@@ -28,16 +39,23 @@
             text-align: center;
             padding: 10px;
         }
+        .main{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body onload="getLocalMedia();">
 
     <h1>WebRTC</h1>
 
-    <section>
-        <video id="local" autoplay muted></video>
-        <div id="videos"></div>
-    </section>
+    <div class="main">
+        <section id="videos">
+            <video id="local" autoplay muted></video>
+        </section>
+    </div>
 
     <section>
         <input type="button" value="Call" id="call">

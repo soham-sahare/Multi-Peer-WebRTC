@@ -7,40 +7,41 @@ let io = require("socket.io")(http)
 app.use(express.static("public"))
 
 http.listen(port, () => {
-  console.log("Listening on Port :",port)
+  console.log("Listening on Port:",port)
   console.log("http://localhost:3000")
 })
 
 io.on("connection", (socket) => {
 
-    console.log("Client connected : " + socket.id) 
+    console.log("-----CLIENT CONNECTED: " + socket.id)
 
-    socket.on("reqCall", () => {
-        console.log("Requesting : "+ socket.id)            
-        socket.broadcast.emit("reqCall", socket.id)
+    socket.on("request_call", () => {
+        console.log("-----REQUESTING: "+ socket.id)            
+        socket.broadcast.emit("request_call", socket.id)
     })
 
-    socket.on("resCall", (id) => {
-        console.log(socket.id +": Responsing To" + id) 
-        socket.to(id).emit("resCall", socket.id)
+    socket.on("response_call", (id) => {
+        console.log(socket.id +" -----RESPONSING----- " + id) 
+        socket.to(id).emit("response_call", socket.id)
     })
     
     socket .on("offer", (id, offer) => {
-        console.log(socket.id +": Offering To" + id) 
+        console.log(socket.id +" -----OFFERING----- " + id) 
         socket.to(id).emit("offer", socket.id, offer)
     })
 
     socket.on("answer", (id, answer) => {
-        console.log(socket.id +": Answering To" + id) 
+        console.log(socket.id +" -----ANSWERING----- " + id) 
         socket.to(id).emit("answer", socket.id, answer)
     })
 
     socket.on("ice", (id, ice) => {
-        console.log(socket.id +": Icing To" + id) 
+        console.log(socket.id +" -----ICING----- " + id) 
         socket.to(id).emit("ice", socket.id, ice)
     })
 
     socket.on("disconnect", () => {
-        console.log("Client Disconnected :", socket.id)
+        console.log("-----CLIENT DISCONNECTED: " + socket.id)
+        io.emit("delete", socket.id)
     })
 })
