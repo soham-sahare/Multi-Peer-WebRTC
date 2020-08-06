@@ -19,14 +19,22 @@ const config = {
 }
 
 const constraints = {
-    video : true,
-    audio : true
+    video : {
+        width: 300,
+        height: 200,
+        frameRate: { max: 60 }
+    },
+    audio: {
+        sampleRate: 48000,
+        channelCount: 2,
+        volume: 1.0,
+        echoCancellation: true
+    }
 }
 
 function getLocalMedia(){
     navigator.mediaDevices.getUserMedia(constraints)
     .then(stream => {
-        console.log("Got MediaStream:", stream)
         local.srcObject = stream
         localStream = stream
     })
@@ -43,8 +51,6 @@ call.onclick = () => {
 
 socket.on("request_call", (id) => {
 
-    console.log("Receiving : ", id)
-
     receive.removeAttribute("disabled")
     receive.setAttribute("value", "Receiving Call")
 
@@ -58,7 +64,6 @@ socket.on("request_call", (id) => {
 socket.on("response_call", (id) => {
 
     if(peer[id] == null){
-        console.log("Connected : ", id)
         makePeerLocal(id)
     }
 })
@@ -74,14 +79,13 @@ function makePeer(id){
     div.appendChild(remote)
 
     peer[id].ontrack = (event) => {
-        console.log("Getting Remote Stream...")
         remote.srcObject = event.streams[0]
     }
 
     peer[id].onconnectionstatechange = (event) => {
 
         if(peer[id].connectionstate === "connected"){
-            console.log("Peer connected: ", id)  
+            console.log("WebRTC Connection Successfull")  
         }
         call.setAttribute("hidden", true)
         receive.setAttribute("value", "Connected")
@@ -122,8 +126,6 @@ socket.on("answer", (id, answer) => {
 })
 
 socket.on("ice", (id, ice) => {
-
-    console.log("Got ICE Candidate")
     peer[id].addIceCandidate(new RTCIceCandidate(ice))
 })
 

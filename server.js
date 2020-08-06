@@ -17,8 +17,8 @@ io.on("connection", (socket) => {
 
     console.log("-----CLIENT CONNECTED: " + socket.id)
     connected_users.push(socket.id)
-    // console.log(connected_users)
-  
+    // console.log(connected_users.length)
+
     socket.on("request_call", () => {
         console.log("-----REQUESTING: "+ socket.id)
         socket.broadcast.emit("request_call", socket.id)
@@ -28,7 +28,7 @@ io.on("connection", (socket) => {
         console.log(socket.id +" -----RESPONSING----- " + id) 
         socket.to(id).emit("response_call", socket.id)
     })
-
+    
     socket .on("offer", (id, offer) => {
         console.log(socket.id +" -----OFFERING----- " + id) 
         socket.to(id).emit("offer", socket.id, offer)
@@ -51,7 +51,7 @@ io.on("connection", (socket) => {
         if(index > -1){
             connected_users.splice(index, 1)
         }
-        // console.log(connected_users)
+        // console.log(connected_users.length)
     })
 
     socket.on("mute", () => {
