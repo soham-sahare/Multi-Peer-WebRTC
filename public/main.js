@@ -3,6 +3,8 @@ const div = document.getElementById("videos")
 
 const call = document.getElementById("call")
 const recieve = document.getElementById("recieve")
+const mute = document.getElementById("mute")
+const unmute = document.getElementById("unmute")
 
 var localStream = null
 var peer = []
@@ -18,7 +20,7 @@ const config = {
 
 const constraints = {
     video : true,
-    audio : false
+    audio : true
 }
 
 function getLocalMedia(){
@@ -31,6 +33,7 @@ function getLocalMedia(){
     .catch(err => {
         console.log("Error : ", err)
     })
+    mute.style.display = "block"
 }
 
 call.onclick = () => {
@@ -65,15 +68,6 @@ function makePeer(id){
 
     peer[id].addStream(localStream)
 
-    if(document.getElementById("videos").getElementsByTagName("video").length == 1){
-        alert(document.getElementById("videos").getElementsByTagName("video").length)
-        document.getElementById("videos").style.gridTemplateColumns = "50% 50%"
-    }
-    else if(document.getElementById("videos").getElementsByTagName("video").length == 2){
-        alert(document.getElementById("videos").getElementsByTagName("video").length)
-        document.getElementById("videos").style.gridTemplateColumns = "33% 33% 33%"
-    }
-    
     var remote = document.createElement("video")
     remote.setAttribute("id", id)
     remote.setAttribute("autoplay", true)
@@ -136,4 +130,28 @@ socket.on("ice", (id, ice) => {
 socket.on("delete", (id) => {
     var elem = document.getElementById(id)
     elem.remove()
+})
+
+socket.on("full", (id) => {
+    alert("Full")
+})
+
+mute.onclick = () => {
+    mute.style.display = "none"
+    unmute.style.display = "block"
+    socket.emit("mute")
+}
+
+unmute.onclick = () => {
+    unmute.style.display = "none"
+    mute.style.display = "block"
+    socket.emit("unmute")
+}
+
+socket.on("mute", (id) => {
+    localStream.getAudioTracks()[0].enabled = false
+})
+
+socket.on("unmute", (id) => {
+    localStream.getAudioTracks()[0].enabled = true
 })

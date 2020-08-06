@@ -22,6 +22,7 @@
         }
         #videos{
             display: grid;
+            grid-template-columns: 33% 33%;
             align-items: center;
             justify-content: space-around;
         }
@@ -45,6 +46,9 @@
             align-items: center;
             justify-content: center;
         }
+        #mute, #unmute{
+            display: none;
+        }
     </style>
 </head>
 <body onload="getLocalMedia();">
@@ -60,6 +64,8 @@
     <section>
         <input type="button" value="Call" id="call">
         <input type="button" value="Receive" id="receive">
+        <input type="button" value="Mute" id="mute">
+        <input type="button" value="Unmute" id="unmute">
     </section>
     
     <script src="http://webrtc.github.io/adapter/adapter-latest.js"></script>
