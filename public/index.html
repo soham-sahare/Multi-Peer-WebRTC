@@ -12,9 +12,9 @@
     video{
         width: 100%;
         height: auto;
-        padding: 2px;
+        margin: 8px;
     }
-    #mute, #unmute{
+    #mute, #unmute, #hangup{
         display: none;
     }
     #btns{
@@ -33,9 +33,7 @@
     <div class="container" id="container">
 
         <div class="row no-gutters" id="stream1">
-            <div class="col">
-                <video id="local" autoplay muted></video>
-            </div>
+            <video id="local" class="col" autoplay muted></video>
         </div>
 
         <div class="row no-gutters" id="stream2">
@@ -48,6 +46,7 @@
         <input type="button" class="btn btn-success" value="Receive" id="receive">
         <input type="button" class="btn btn-info" value="Mute" id="mute">
         <input type="button" class="btn btn-info" value="Unmute" id="unmute">
+        <input type="button" class="btn btn-danger" value="Hang Up" id="hangup">
     </div>
 
     <script src="http://webrtc.github.io/adapter/adapter-latest.js"></script>

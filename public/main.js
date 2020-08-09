@@ -4,6 +4,7 @@ const call = document.getElementById("call")
 const recieve = document.getElementById("recieve")
 const mute = document.getElementById("mute")
 const unmute = document.getElementById("unmute")
+const hangup = document.getElementById("hangup")
 
 var localStream = null
 var peer = []
@@ -36,6 +37,7 @@ function getLocalMedia(){
     .then(stream => {
         local.srcObject = stream
         localStream = stream
+        local.id = socket.id
     })
     .catch(err => {
         alert("Error : ", err)
@@ -50,7 +52,6 @@ call.onclick = () => {
 
 socket.on("request_call", (id) => {
 
-    
     receive.setAttribute("value", "Receiving Call")
 
     receive.onclick = () => {
@@ -72,35 +73,29 @@ function makePeer(id){
 
     peer[id].addStream(localStream)
 
-    var stream1 = document.getElementById("stream1").getElementsByTagName('div').length
-    var stream2 = document.getElementById("stream2").getElementsByTagName('div').length
-
-    var Created_div = document.createElement("div")
-    Created_div.setAttribute("class", "col")
+    var stream1 = document.getElementById("stream1").getElementsByTagName('video').length
+    var stream2 = document.getElementById("stream2").getElementsByTagName('video').length
 
     var remote = document.createElement("video")
     remote.setAttribute("id", id)
+    remote.setAttribute("class", "col")
     remote.setAttribute("autoplay", true)
 
     const top = document.getElementById("stream1")
     const bottom = document.getElementById("stream2")
 
     if(stream1 == 1 && stream2 == 0){
-        top.appendChild(Created_div)
-        Created_div.appendChild(remote)
+        top.appendChild(remote)
     }
     else if(stream1 == 2 && stream2 == 0){
-        bottom.appendChild(Created_div)
-        Created_div.appendChild(remote)
+        bottom.appendChild(remote)
     }
     else if(stream1 == 2 && stream2 == 1){
-        bottom.appendChild(Created_div)
-        Created_div.appendChild(remote)
+        bottom.appendChild(remote)
     }
     else{
         var container = document.getElementById("container")
-        container.appendChild(Created_div)
-        Created_div.appendChild(remote)
+        container.appendChild(remote)
     }
 
     peer[id].ontrack = (event) => {
@@ -114,6 +109,7 @@ function makePeer(id){
         }
         call.setAttribute("hidden", true)
         receive.setAttribute("value", "Connected")
+        hangup.style.display = "block"
     }
 }
 
@@ -153,6 +149,11 @@ socket.on("answer", (id, answer) => {
 socket.on("ice", (id, ice) => {
     peer[id].addIceCandidate(new RTCIceCandidate(ice))
 })
+
+hangup.onclick = () => {
+    socket.disconnect()
+    window.location.reload()
+}
 
 socket.on("delete", (id) => {
     var elem = document.getElementById(id)
