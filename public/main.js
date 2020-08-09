@@ -157,7 +157,9 @@ hangup.onclick = () => {
 
 socket.on("delete", (id) => {
     var elem = document.getElementById(id)
-    elem.remove()
+    if(elem){
+        elem.remove()
+    }
 })
 
 socket.on("full", (id) => {
