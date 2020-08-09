@@ -3,71 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="favicon.png" type="image/png" sizes="16x16">
-    <title>WebRTC</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" >
     <style>
-        *{
-            padding: 0;
-            margin: 0;
-        }
-        body{
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        section{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #videos{
-            display: grid;
-            grid-template-columns: auto;
-            align-items: center;
-            justify-content: space-around;
-        }
-        video{
-            width: 300px;
-            padding: 10px;
-            border: 2px solid blueviolet;
-        }
-        input[type=button]{
-            padding: 10px;
-            margin: 10px;
-        }
-        h1{
-            text-align: center;
-            padding: 10px;
-        }
-        .main{
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        #mute, #unmute{
-            display: none;
-        }
+    .no-gutter > [class*='col-'] {
+        padding-right:0;
+        padding-left:0;
+    }
+    video{
+        width: 100%;
+        height: auto;
+        padding: 2px;
+    }
+    #mute, #unmute{
+        display: none;
+    }
+    #btns{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    input[type=button]{
+        margin: 10px;
+    }
     </style>
+    <title>WebRTC</title>
 </head>
 <body onload="getLocalMedia();">
 
-    <h1>WebRTC</h1>
+    <div class="container" id="container">
 
-    <div class="main">
-        <section id="videos">
-            <video id="local" autoplay muted></video>
-        </section>
+        <div class="row no-gutters" id="stream1">
+            <div class="col">
+                <video id="local" autoplay muted></video>
+            </div>
+        </div>
+
+        <div class="row no-gutters" id="stream2">
+        </div>
+        
     </div>
 
-    <section>
-        <input type="button" value="Call" id="call">
-        <input type="button" value="Receive" id="receive">
-        <input type="button" value="Mute" id="mute">
-        <input type="button" value="Unmute" id="unmute">
-    </section>
-    
+    <div class="container" style="text-align: center; padding: 20px;" id="btns">
+        <input type="button" class="btn btn-primary" value="Call" id="call">
+        <input type="button" class="btn btn-success" value="Receive" id="receive">
+        <input type="button" class="btn btn-info" value="Mute" id="mute">
+        <input type="button" class="btn btn-info" value="Unmute" id="unmute">
+    </div>
+
     <script src="http://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="main.js"></script>

@@ -56,11 +56,11 @@ io.on("connection", (socket) => {
 
     socket.on("mute", () => {
         console.log("-----MUTING: "+ socket.id)
-        socket.broadcast.emit("mute", socket.id)
+        socket.emit("mute", socket.id)
     })
 
     socket.on("unmute", () => {
         console.log("-----UNMUTING: "+ socket.id)
-        socket.broadcast.emit("unmute", socket.id)
+        socket.emit("unmute", socket.id)
     })
 })

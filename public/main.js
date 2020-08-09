@@ -1,5 +1,4 @@
 const local = document.getElementById("local")
-const div = document.getElementById("videos")
 
 const call = document.getElementById("call")
 const recieve = document.getElementById("recieve")
@@ -20,8 +19,8 @@ const config = {
 
 const constraints = {
     video : {
-        width: 300,
-        height: 200,
+        width: 500,
+        height: 300,
         frameRate: { max: 60 }
     },
     audio: {
@@ -39,7 +38,7 @@ function getLocalMedia(){
         localStream = stream
     })
     .catch(err => {
-        console.log("Error : ", err)
+        alert("Error : ", err)
     })
     mute.style.display = "block"
 }
@@ -51,7 +50,7 @@ call.onclick = () => {
 
 socket.on("request_call", (id) => {
 
-    receive.removeAttribute("disabled")
+    
     receive.setAttribute("value", "Receiving Call")
 
     receive.onclick = () => {
@@ -73,10 +72,36 @@ function makePeer(id){
 
     peer[id].addStream(localStream)
 
+    var stream1 = document.getElementById("stream1").getElementsByTagName('div').length
+    var stream2 = document.getElementById("stream2").getElementsByTagName('div').length
+
+    var Created_div = document.createElement("div")
+    Created_div.setAttribute("class", "col")
+
     var remote = document.createElement("video")
     remote.setAttribute("id", id)
     remote.setAttribute("autoplay", true)
-    div.appendChild(remote)
+
+    const top = document.getElementById("stream1")
+    const bottom = document.getElementById("stream2")
+
+    if(stream1 == 1 && stream2 == 0){
+        top.appendChild(Created_div)
+        Created_div.appendChild(remote)
+    }
+    else if(stream1 == 2 && stream2 == 0){
+        bottom.appendChild(Created_div)
+        Created_div.appendChild(remote)
+    }
+    else if(stream1 == 2 && stream2 == 1){
+        bottom.appendChild(Created_div)
+        Created_div.appendChild(remote)
+    }
+    else{
+        var container = document.getElementById("container")
+        container.appendChild(Created_div)
+        Created_div.appendChild(remote)
+    }
 
     peer[id].ontrack = (event) => {
         remote.srcObject = event.streams[0]
