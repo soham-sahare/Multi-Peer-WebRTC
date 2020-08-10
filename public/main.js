@@ -5,8 +5,13 @@ const recieve = document.getElementById("recieve")
 const mute = document.getElementById("mute")
 const unmute = document.getElementById("unmute")
 const hangup = document.getElementById("hangup")
+const vd_off = document.getElementById("vd_off")
+const vd_on = document.getElementById("vd_on")
+const ss_off = document.getElementById("ss_off")
+const ss_on = document.getElementById("ss_on")
 
 var localStream = null
+var screenshareGlobalStream = null
 var peer = []
 
 const socket = io.connect(location.origin)
@@ -110,6 +115,8 @@ function makePeer(id){
         call.setAttribute("hidden", true)
         receive.setAttribute("value", "Connected")
         hangup.style.display = "block"
+        vd_off.style.display = "block"
+        ss_on.style.display = "block"
     }
 }
 
@@ -185,3 +192,40 @@ socket.on("mute", (id) => {
 socket.on("unmute", (id) => {
     localStream.getAudioTracks()[0].enabled = true
 })
+
+vd_off.onclick = () => {
+    vd_off.style.display = "none"
+    vd_on.style.display = "block"
+    localStream.getVideoTracks()[0].enabled = false
+}
+
+vd_on.onclick = () => {
+    vd_on.style.display = "none"
+    vd_off.style.display = "block"
+    localStream.getVideoTracks()[0].enabled = true
+}
+
+ss_on.onclick = () => {
+    ss_on.style.display = "none"
+    ss_off.style.display = "block"
+    let displayMediaOptions = {video: true,
+         audio: false}
+    navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+    .then(function(stream){
+        local.srcObject=stream
+        peer[id].removeStream(localStream)
+        peer[id].addStream(stream)
+        
+        screenshareGlobalStream = stream
+  })
+}
+
+ss_off.onclick = () => {
+    ss_off.style.display = "none"
+    ss_on.style.display = "block"
+    let displayMediaOptions = {video: true,
+         audio: false}
+    local.srcObject = localStream
+    peer[id].removeStream(screenshareGlobalStream)
+    peer[id].addStream(localStream)
+}
