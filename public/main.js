@@ -169,10 +169,6 @@ socket.on("delete", (id) => {
     }
 })
 
-socket.on("full", (id) => {
-    alert("Full")
-})
-
 mute.onclick = () => {
     mute.style.display = "none"
     unmute.style.display = "block"
@@ -208,8 +204,12 @@ vd_on.onclick = () => {
 ss_on.onclick = () => {
     ss_on.style.display = "none"
     ss_off.style.display = "block"
-    let displayMediaOptions = {video: true,
-         audio: false}
+
+    let displayMediaOptions = {
+        video: true,
+        audio: false
+    }
+
     navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
     .then(function(stream){
         local.srcObject=stream
@@ -223,8 +223,12 @@ ss_on.onclick = () => {
 ss_off.onclick = () => {
     ss_off.style.display = "none"
     ss_on.style.display = "block"
-    let displayMediaOptions = {video: true,
-         audio: false}
+
+    let displayMediaOptions = {
+        video: true,
+        audio: false
+    }
+
     local.srcObject = localStream
     peer[id].removeStream(screenshareGlobalStream)
     peer[id].addStream(localStream)
