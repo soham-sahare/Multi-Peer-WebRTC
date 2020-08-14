@@ -10,14 +10,19 @@ const vd_on = document.getElementById("vd_on")
 const ss_off = document.getElementById("ss_off")
 const ss_on = document.getElementById("ss_on")
 
+var camVideoTrack
+var videoSender
+var camAudioTrack
+var audioSender
+var screenVideoTrack
+
 var localStream = null
-var screenshareGlobalStream = null
 var peer = []
 
 const socket = io.connect(location.origin)
 
 const config = {
-    "iceServers": [
+    "iceServers":[
         {'urls' : "stun:stun.stunprotocol.org:3478"},
         {'urls' : "stun:stun.l.google.com:19302"}
     ]
@@ -43,11 +48,31 @@ function getLocalMedia(){
         local.srcObject = stream
         localStream = stream
         local.id = socket.id
+        camVideoTrack = stream.getVideoTracks()[0] 
+        camAudioTrack = stream.getAudioTracks()[0] 
     })
     .catch(err => {
-        alert("Error : ", err)
+        alert("Error: ", err)
     })
     mute.style.display = "block"
+}
+
+//for screenshare
+function getLocalMediaS(){
+    
+    let displayMediaOptions = {
+        video: true, 
+        audio: false
+    }
+    navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
+    .then(function(stream){
+        local.srcObject = stream
+        screenVideoTrack = stream.getVideoTracks()[0] 
+        videoSender.replaceTrack(screenVideoTrack) 
+    })
+    .catch(err => {
+        console.log("Error: ", err)
+    })
 }
 
 call.onclick = () => {
@@ -76,7 +101,8 @@ socket.on("response_call", (id) => {
 function makePeer(id){
     peer[id] = new RTCPeerConnection(config)
 
-    peer[id].addStream(localStream)
+    videoSender = peer[id].addTrack(camVideoTrack, localStream) 
+    audioSender = peer[id].addTrack(camAudioTrack, localStream) 
 
     var stream1 = document.getElementById("stream1").getElementsByTagName('video').length
     var stream2 = document.getElementById("stream2").getElementsByTagName('video').length
@@ -172,22 +198,16 @@ socket.on("delete", (id) => {
 mute.onclick = () => {
     mute.style.display = "none"
     unmute.style.display = "block"
-    socket.emit("mute")
+
+    localStream.getAudioTracks()[0].enabled = false
 }
 
 unmute.onclick = () => {
     unmute.style.display = "none"
     mute.style.display = "block"
-    socket.emit("unmute")
-}
 
-socket.on("mute", (id) => {
-    localStream.getAudioTracks()[0].enabled = false
-})
-
-socket.on("unmute", (id) => {
     localStream.getAudioTracks()[0].enabled = true
-})
+}
 
 vd_off.onclick = () => {
     vd_off.style.display = "none"
@@ -205,19 +225,7 @@ ss_on.onclick = () => {
     ss_on.style.display = "none"
     ss_off.style.display = "block"
 
-    let displayMediaOptions = {
-        video: true,
-        audio: false
-    }
-
-    navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
-    .then(function(stream){
-        local.srcObject=stream
-        peer[id].removeStream(localStream)
-        peer[id].addStream(stream)
-        
-        screenshareGlobalStream = stream
-  })
+    getLocalMediaS()
 }
 
 ss_off.onclick = () => {
@@ -230,6 +238,5 @@ ss_off.onclick = () => {
     }
 
     local.srcObject = localStream
-    peer[id].removeStream(screenshareGlobalStream)
-    peer[id].addStream(localStream)
+    videoSender.replaceTrack(localStream.getVideoTracks()[0]) 
 }

@@ -53,14 +53,4 @@ io.on("connection", (socket) => {
         }
         // console.log(connected_users.length)
     })
-
-    socket.on("mute", () => {
-        console.log("-----MUTING: "+ socket.id)
-        socket.to(socket.id).emit("mute", socket.id)
-    })
-
-    socket.on("unmute", () => {
-        console.log("-----UNMUTING: "+ socket.id)
-        socket.to(socket.id).emit("unmute", socket.id)
-    })
 })
