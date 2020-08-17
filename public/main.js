@@ -9,8 +9,6 @@ const vd_off = document.getElementById("vd_off")
 const vd_on = document.getElementById("vd_on")
 const ss_off = document.getElementById("ss_off")
 const ss_on = document.getElementById("ss_on")
-const record_on = document.getElementById("record_on")
-const record_off = document.getElementById("record_off")
 
 var camVideoTrack
 var videoSender
@@ -232,14 +230,4 @@ ss_off.onclick = () => {
 
     local.srcObject = localStream
     videoSender.replaceTrack(localStream.getVideoTracks()[0]) 
-}
-
-record_on.onclick = () => {
-    record_on.style.display = "none"
-    record_off.style.display = "block"
-}
-
-record_off.onclick = () => {
-    record_off.style.display = "none"
-    record_on.style.display = "block"
 }
