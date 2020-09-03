@@ -6,7 +6,8 @@ let io = require("socket.io")(http)
 
 app.use(express.static("public"))
 
-var connected_users = []
+const {userJoin, getCurrentUser, userLeave, getRoomUsers} = require("./utils/users")
+const { log } = require("console")
 
 http.listen(port, () => {
   console.log("Listening on Port:",port)
@@ -15,13 +16,23 @@ http.listen(port, () => {
 
 io.on("connection", (socket) => {
 
-    console.log("-----CLIENT CONNECTED: " + socket.id)
-    connected_users.push(socket.id)
-    // console.log(connected_users.length)
+    socket.on("joinRoom", ({ username, room_name }) => {
+        const user = userJoin(socket.id, username, room_name)
+        socket.join(user.room)
+
+        io.to(user.room).emit("roomUsers", {
+            room: user.room,
+            users: getRoomUsers(user.room)
+        })
+
+        console.log("-----CLIENT CONNECTED: " + socket.id + " TO ROOM: " + room_name)
+    })
 
     socket.on("request_call", () => {
+        const user = getCurrentUser(socket.id)
+
         console.log("-----REQUESTING: "+ socket.id)
-        socket.broadcast.emit("request_call", socket.id)
+        socket.to(user.room).emit("request_call", socket.id)
     })
 
     socket.on("response_call", (id) => {
@@ -45,12 +56,15 @@ io.on("connection", (socket) => {
     })
 
     socket.on("disconnect", () => {
-        console.log("-----CLIENT DISCONNECTED: " + socket.id)
-        io.emit("delete", socket.id)
-        var index = connected_users.indexOf(socket.id)
-        if(index > -1){
-            connected_users.splice(index, 1)
+        const user = userLeave(socket.id)
+        if(user){
+            io.to(user.room).emit("delete", {
+                id: socket.id,
+                room: user.room,
+                users: getRoomUsers(user.room)
+            })
         }
-        // console.log(connected_users.length)
+
+        console.log("-----CLIENT DISCONNECTED: " + socket.id)
     })
 })

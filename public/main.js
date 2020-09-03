@@ -9,6 +9,9 @@ const vd_off = document.getElementById("vd_off")
 const vd_on = document.getElementById("vd_on")
 const ss_off = document.getElementById("ss_off")
 const ss_on = document.getElementById("ss_on")
+const chat_on = document.getElementById("chat_on")
+const chat_off = document.getElementById("chat_off")
+
 
 var camVideoTrack
 var videoSender
@@ -39,20 +42,19 @@ function getLocalMedia(){
         local.srcObject = stream
         localStream = stream
         local.id = socket.id
-        camVideoTrack = stream.getVideoTracks()[0] 
-        camAudioTrack = stream.getAudioTracks()[0] 
+        camVideoTrack = stream.getVideoTracks()[0]
+        camAudioTrack = stream.getAudioTracks()[0]
     })
     .catch(err => {
         alert("Error: ", err)
     })
     mute.style.display = "block"
-    record_on.style.display = "block"
 }
 
 function getLocalMediaS(){
     
     let displayMediaOptions = {
-        video: true, 
+        video: true,
         audio: false
     }
     navigator.mediaDevices.getDisplayMedia(displayMediaOptions)
@@ -179,7 +181,28 @@ hangup.onclick = () => {
     window.location.reload()
 }
 
-socket.on("delete", (id) => {
+function outputRoomName(room) {
+    document.getElementById("room-name").innerHTML = room
+}
+
+function outputUsers(users) {
+    document.getElementById("users").innerHTML = ''
+
+    users.forEach(user => {
+        const li = document.createElement('li')
+        li.innerText = user.username
+        document.getElementById("users").appendChild(li)
+    })
+} 
+
+socket.on("roomUsers", ({ room, users }) => {
+    outputRoomName(room)
+    outputUsers(users)
+})
+
+socket.on("delete", ({ id, room, users }) => {
+    outputRoomName(room)
+    outputUsers(users)
     var elem = document.getElementById(id)
     if(elem){
         elem.remove()
@@ -230,4 +253,18 @@ ss_off.onclick = () => {
 
     local.srcObject = localStream
     videoSender.replaceTrack(localStream.getVideoTracks()[0]) 
+}
+
+document.getElementById("go").onclick = () => {
+
+    getLocalMedia();
+
+    document.getElementById("names").style.display = "none"
+    document.getElementById("main").style.display = "block"
+    document.getElementById("info").style.display = "block"
+
+    room_name = document.getElementById("room").value
+    username = document.getElementById("name").value
+
+    socket.emit("joinRoom", { username, room_name })
 }
