@@ -9,9 +9,12 @@ const vd_off = document.getElementById("vd_off")
 const vd_on = document.getElementById("vd_on")
 const ss_off = document.getElementById("ss_off")
 const ss_on = document.getElementById("ss_on")
+const gs_on = document.getElementById("gs_on")
+const gs_off = document.getElementById("gs_off")
+const gsnoti = document.getElementById("gsnoti")
+
 const chat_on = document.getElementById("chat_on")
 const chat_off = document.getElementById("chat_off")
-
 
 var camVideoTrack
 var videoSender
@@ -26,8 +29,8 @@ const socket = io.connect(location.origin)
 
 const config = {
     "iceServers":[
-        {'urls' : "stun:stun.stunprotocol.org:3478"},
-        {'urls' : "stun:stun.l.google.com:19302"}
+        {"urls" : "stun:stun.stunprotocol.org:3478"},
+        {"urls" : "stun:stun.l.google.com:19302"}
     ]
 }
 
@@ -36,6 +39,7 @@ const constraints = {
     audio: true
 }
 
+// Setting up Local Stream
 function getLocalMedia(){
     navigator.mediaDevices.getUserMedia(constraints)
     .then(stream => {
@@ -49,8 +53,11 @@ function getLocalMedia(){
         alert("Error: ", err)
     })
     mute.style.display = "block"
+    gs_off.style.display= "none"
+    gsnoti.style.display="none"
 }
 
+// Setting Local stream as shared screen
 function getLocalMediaS(){
     
     let displayMediaOptions = {
@@ -97,8 +104,8 @@ function makePeer(id){
     videoSender = peer[id].addTrack(camVideoTrack, localStream) 
     audioSender = peer[id].addTrack(camAudioTrack, localStream) 
 
-    var stream1 = document.getElementById("stream1").getElementsByTagName('video').length
-    var stream2 = document.getElementById("stream2").getElementsByTagName('video').length
+    var stream1 = document.getElementById("stream1").getElementsByTagName("video").length
+    var stream2 = document.getElementById("stream2").getElementsByTagName("video").length
 
     var remote = document.createElement("video")
     remote.setAttribute("id", id)
@@ -186,10 +193,10 @@ function outputRoomName(room) {
 }
 
 function outputUsers(users) {
-    document.getElementById("users").innerHTML = ''
+    document.getElementById("users").innerHTML = ""
 
     users.forEach(user => {
-        const li = document.createElement('li')
+        const li = document.createElement("li")
         li.innerText = user.username
         document.getElementById("users").appendChild(li)
     })
@@ -257,7 +264,7 @@ ss_off.onclick = () => {
 
 document.getElementById("go").onclick = () => {
 
-    getLocalMedia();
+    getLocalMedia() 
 
     document.getElementById("names").style.display = "none"
     document.getElementById("main").style.display = "block"
@@ -267,4 +274,151 @@ document.getElementById("go").onclick = () => {
     username = document.getElementById("name").value
 
     socket.emit("joinRoom", { username, room_name })
+}
+
+document.getElementById("send").onclick = () => {
+
+    let msg
+    msg = document.getElementById("msg").value.trim()
+    if(!msg){
+        return false
+    }
+
+    socket.emit("chatMessage", msg)
+    document.getElementById("msg").value = ""
+}
+
+socket.on("message", message => {
+    outputMessage(message)
+})
+
+function outputMessage(message){
+    const div = document.createElement("div") 
+    div.classList.add("message") 
+    const p = document.createElement("p") 
+    p.classList.add("meta")
+    p.innerText = message.username
+    p.innerHTML += `<span>${message.time}</span>`
+    div.appendChild(p)
+    const para = document.createElement("p")
+    para.classList.add("text")
+    para.innerText = message.text
+    div.appendChild(para)
+    document.querySelector(".chat-messages").appendChild(div)
+}  
+
+chat_on.onclick = () => {
+    chat_on.style.display = "none"
+    chat_off.style.display = "block"
+
+    document.getElementById("chat").style.display = "block"
+}
+
+chat_off.onclick = () => {
+    chat_off.style.display = "none"
+    chat_on.style.display = "block"
+
+    document.getElementById("chat").style.display = "none"
+}
+
+//Green Screen
+
+let c1, ctx1, c_tmp, ctx_tmp 
+c1 = document.getElementById('output-canvas')
+gstoggle = 0
+
+gs_on.onclick = () => {
+    gstoggle = 1
+    gs_on.style.display="none"
+    gs_off.style.display="block"
+    gsnoti.style.display="block"
+    local
+    computeFrame()
+    var stream = c1.captureStream(25)
+    videoSender.replaceTrack(stream.getVideoTracks()[0])
+}
+
+gs_off.onclick = () => {
+    gs_off.style.display = "none"
+    gs_on.style.display = "block"
+    gsnoti.style.display = "none"
+    gstoggle = 0
+    videoSender.replaceTrack(localStream.getVideoTracks()[0])
+}
+
+function computeFrame() {
+      
+    if(gstoggle == 0)
+    {return}
+
+    ctx1 = c1.getContext('2d')
+
+    c_tmp = document.createElement('canvas')
+    c_tmp.setAttribute('width', 320)
+    c_tmp.setAttribute('height',240)
+    ctx_tmp = c_tmp.getContext('2d')
+
+    ctx_tmp.drawImage(local, 0, 0, 320 , 240 )
+    let frame = ctx_tmp.getImageData(0, 0, 320 , 240 )
+
+    for (let i = 0; i < frame.data.length /4; i++) {
+       let r = frame.data[i * 4 + 0] 
+       let g = frame.data[i * 4 + 1] 
+       let b = frame.data[i * 4 + 2] 
+       let a = frame.data[i * 4 + 3] 
+       
+        var selectedR = 110 
+        var selectedG = 154 
+        var selectedB = 90 
+        if (r <= selectedR && g >= selectedG && b >= selectedB) {
+           frame.data[i * 4 + 0] = 0 
+           frame.data[i * 4 + 1] = 0 
+           frame.data[i * 4 + 2] = 0 
+        }
+    }
+    
+    for (var y = 0; y < frame.height; y++) {
+        for (var x = 0; x < frame.width; x++) {
+            var r = frame.data[((frame.width * y) + x) * 4] 
+            var g = frame.data[((frame.width * y) + x) * 4 + 1] 
+            var b = frame.data[((frame.width * y) + x) * 4 + 2] 
+            var a = frame.data[((frame.width * y) + x) * 4 + 3] 
+            if (frame.data[((frame.width * y) + x) * 4 + 3] != 0) {
+                var offsetYup = y - 1 
+                var offsetYdown = y + 1 
+                var offsetXleft = x - 1 
+                var offsetxRight = x + 1 
+                var change = false 
+                if (offsetYup > 0) {
+                    if (frame.data[((frame.width * (y - 1)) + (x)) * 4 + 3] == 0) {
+                        change = true 
+                    }
+                }
+                if (offsetYdown < frame.height) {
+                    if (frame.data[((frame.width * (y + 1)) + (x)) * 4 + 3] == 0) {
+                        change = true 
+                    }
+                }
+                if (offsetXleft > -1) {
+                    if (frame.data[((frame.width * y) + (x - 1)) * 4 + 3] == 0) {
+                        change = true 
+                    }
+                }
+                if (offsetxRight < frame.width) {
+                    if (frame.data[((frame.width * y) + (x + 1)) * 4 + 3] == 0) {
+                        change = true 
+                    }
+                }
+                if (change) {
+                    var gray = (frame.data[((frame.width * y) + x) * 4 + 0] * .393) + (frame.data[((frame.width * y) + x) * 4 + 1] * .769) + (frame.data[((frame.width * y) + x) * 4 + 2] * .189) 
+                    frame.data[((frame.width * y) + x) * 4] = (gray * 0.2) + (imgBackgroundData.data[((frame.width * y) + x) * 4] * 0.9) 
+                    frame.data[((frame.width * y) + x) * 4 + 1] = (gray * 0.2) + (imgBackgroundData.data[((frame.width * y) + x) * 4 + 1] * 0.9) 
+                    frame.data[((frame.width * y) + x) * 4 + 2] = (gray * 0.2) + (imgBackgroundData.data[((frame.width * y) + x) * 4 + 2] * 0.9) 
+                    frame.data[((frame.width * y) + x) * 4 + 3] = 255 
+                }
+            }
+        }
+    }
+   ctx1.putImageData(frame, 0, 0) 
+   setTimeout(computeFrame, 0) 
 }

@@ -7,6 +7,7 @@ let io = require("socket.io")(http)
 app.use(express.static("public"))
 
 const {userJoin, getCurrentUser, userLeave, getRoomUsers} = require("./utils/users")
+const formatMessage = require("./utils/messages.js")
 const { log } = require("console")
 
 http.listen(port, () => {
@@ -24,6 +25,8 @@ io.on("connection", (socket) => {
             room: user.room,
             users: getRoomUsers(user.room)
         })
+
+        socket.emit("message", formatMessage("WebRTC BOT", 'Welcome!'))
 
         console.log("-----CLIENT CONNECTED: " + socket.id + " TO ROOM: " + room_name)
     })
@@ -53,6 +56,11 @@ io.on("connection", (socket) => {
     socket.on("ice", (id, ice) => {
         console.log(socket.id +" -----ICING----- " + id) 
         socket.to(id).emit("ice", socket.id, ice)
+    })
+
+    socket.on("chatMessage", msg => {
+        const user = getCurrentUser(socket.id)
+        io.to(user.room).emit("message", formatMessage(user.username, msg));
     })
 
     socket.on("disconnect", () => {

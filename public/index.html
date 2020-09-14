@@ -15,7 +15,7 @@
         height: auto;
         margin: 8px;
     }
-    #mute, #unmute, #hangup, #vd_off, #vd_on, #ss_off, #ss_on, #info{
+    #mute, #unmute, #hangup, #vd_on, #ss_off, #info, #chat, #chat_off{
         display: none;
     }
     #btns{
@@ -29,8 +29,18 @@
     #main{
         display: none;
     }
-    #names{
+    #names, #chat_on{
         display: block;
+    }
+    #info{
+        position: absolute;
+        left: 10px;
+        top: 10px;
+    }
+    #chat{
+        position: absolute;
+        top: 10px;
+        right: 10px;
     }
     </style>
     <title>WebRTC</title>
@@ -46,6 +56,11 @@
             </div>
     
             <div class="row no-gutters" id="stream2">
+            </div>
+
+            <div id="gsnoti" style="text-align: center;">
+                <canvas id="output-canvas" class="col" autoplay muted height="240"></canvas>
+                <b>Applied Green Screen</b>
             </div>
             
         </div>
@@ -66,6 +81,13 @@
             <input type="button" class="btn btn-info" value="Screen Share Off" id="ss_off">
             <input type="button" class="btn btn-info" value="Screen Share On" id="ss_on">
         </div>
+        <div class="container" style="text-align: center;" id="btns">
+            <input type="button" class="btn btn-info" value="Green Screen On" id="gs_on">
+            <input type="button" class="btn btn-info" value="Green Screen Off" id="gs_off">
+            
+            <input type="button" class="btn btn-info" value="Chat Show" id="chat_on">
+            <input type="button" class="btn btn-info" value="Chat Off" id="chat_off">
+        </div>
     </div>
     
     <div id="info">
@@ -85,8 +107,22 @@
 
         <input type="text" placeholder="Enter your name" id="name"> <br>
         <input type="text" placeholder="Enter Room name" id="room"> <br>
-        <input type="button" value="Go" id="go"> 
+        <input type="button" value="Go" id="go">
 
+    </div>
+
+    <div id="chat">
+
+        <div class="chat-container">
+
+            <div class="chat-messages"></div>
+
+            <div class="chat-form-container">
+                <input id="msg" id="msg" type="text" placeholder="Enter Message" required autocomplete="off"/>
+                <input type="button" value="Send" id="send">
+            </div>
+
+        </div>
     </div>
 
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
