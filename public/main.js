@@ -27,6 +27,14 @@ var peer = []
 
 const socket = io.connect(location.origin)
 
+function show(){
+    document.getElementById("info").style.display = "block"
+}
+
+function hide(){
+    document.getElementById("info").style.display = "none"
+}
+
 const config = {
     "iceServers":[
         {"urls" : "stun:stun.stunprotocol.org:3478"},
@@ -268,7 +276,7 @@ document.getElementById("go").onclick = () => {
 
     document.getElementById("names").style.display = "none"
     document.getElementById("main").style.display = "block"
-    document.getElementById("info").style.display = "block"
+    document.getElementById("info_icon").style.display = "block"
 
     room_name = document.getElementById("room").value
     username = document.getElementById("name").value
@@ -290,15 +298,17 @@ document.getElementById("send").onclick = () => {
 
 socket.on("message", message => {
     outputMessage(message)
+    const chatMessages = document.querySelector('.chat-messages')
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 })
 
 function outputMessage(message){
     const div = document.createElement("div") 
     div.classList.add("message") 
-    const p = document.createElement("p") 
+    const p = document.createElement("p")
     p.classList.add("meta")
     p.innerText = message.username
-    p.innerHTML += `<span>${message.time}</span>`
+    p.innerHTML += `<span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp${message.time}</span>`
     div.appendChild(p)
     const para = document.createElement("p")
     para.classList.add("text")
