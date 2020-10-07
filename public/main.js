@@ -272,16 +272,24 @@ ss_off.onclick = () => {
 
 document.getElementById("go").onclick = () => {
 
-    getLocalMedia() 
-
-    document.getElementById("names").style.display = "none"
-    document.getElementById("main").style.display = "block"
-    document.getElementById("info_icon").style.display = "block"
-
     room_name = document.getElementById("room").value
     username = document.getElementById("name").value
 
-    socket.emit("joinRoom", { username, room_name })
+    if(username == ""){
+        alert("Username cannot be null. Please try again.")
+    }
+    else if(room_name == ""){
+        alert("Room name cannot be null. Please try again")
+    }
+    else{
+        getLocalMedia() 
+
+        document.getElementById("names").style.display = "none"
+        document.getElementById("main").style.display = "block"
+        document.getElementById("info_icon").style.display = "block"
+
+        socket.emit("joinRoom", { username, room_name })
+    }
 }
 
 document.getElementById("send").onclick = () => {

@@ -1,12 +1,23 @@
-# Multi-Peer-WebRTC
+# Node.js & Passport Login
 
-### Demo:
-  https://multi-peer-webrtc.herokuapp.com/
+This is a user login and registration app using Node.js, Express, Passport, Mongoose, EJS and some other packages.
 
-### Steps:
-  1) npm install
-  2) node server.js / npm start
-  3) Go to browser http://localhost:3000
-  4) Then click on "Call"
-  5) Open the same link (http://localhost:3000) in new tab of same browser and then click on "Receiving Call"
- 
+### Version: 2.0.0
+
+### Usage
+
+```sh
+$ npm install
+```
+
+```sh
+$ npm start
+# Or run with Nodemon
+$ npm run dev
+
+# Visit http://localhost:5000
+```
+
+### MongoDB
+
+Open "config/keys.js" and add your MongoDB URI, local or Atlas
