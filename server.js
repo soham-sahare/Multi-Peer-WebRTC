@@ -24,8 +24,7 @@ dotenv.config()
 require("./config/passport")(passport) 
 
 // DB Config
-//const db = process.env.DB_CONNECT
-const db = "mongodb+srv://sohamsahare:Soham@123@cluster0.jxslv.mongodb.net/daksh?retryWrites=true&w=majority"
+const db = process.env.DB_CONNECT
 
 // Connect to MongoDB
 mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true})
