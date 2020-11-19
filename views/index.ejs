@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" >
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon.png" type="image/png" sizes="16x16">
+    <script src="WebRtcShitBlt.js"></script>
     <title>WebRTC | Daksh</title>
 </head>
 <body>
@@ -20,6 +21,8 @@
     
             <div class="row no-gutters" id="stream2">
             </div>
+
+            <video id="recorded" playsinline loop></video>
 
             <div id="gsnoti" style="text-align: center;">
                 <canvas id="output-canvas" class="col" autoplay muted height="240"></canvas>
@@ -47,8 +50,12 @@
         <div class="container" style="text-align: center;" id="btns">
             <input type="button" class="btn btn-info" value="Green Screen On" id="gs_on">
             <input type="button" class="btn btn-info" value="Green Screen Off" id="gs_off">
-            
             <input type="button" class="btn btn-info" value="Chat Show" id="chat_on">
+
+            <!-- recording buttons-->
+        <button id="record" >Start Recording</button>
+        <button id="play" >Play</button>
+        <button id="download" >Download</button>
         </div>
     </div>
 
