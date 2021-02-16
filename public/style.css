@@ -1,6 +1,45 @@
 body {
     font-family: "Poppins", sans-serif
 }
+
+.video-wrapper {
+    position: relative;
+}
+
+.video-wrapper video {
+  height: auto;
+  vertical-align: middle;
+  width: 100%;
+}
+.video-description {
+  background: transparent;
+  position: absolute;
+  top: -72%;
+  right: 0;
+  bottom: 0;
+  left: -75%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+/* Optional -- Wrap Logo with h3 to style it.*/
+
+.video-description h3 {
+    color: #000;
+    font-family: "Nobile",sans-serif;
+    font-size: 2em;
+    margin: 0;
+    padding: 6px 12px;
+    text-align: center;
+}
+
 a {
     color: #92badd;
     display:inline-block;
@@ -187,7 +226,7 @@ video{
     top: 30px;
     display: none;
     color: white;
-    background-color: rgba(57, 172, 231);
+    background-color: #9e3a55;
     border-radius: 20px;
 }
 

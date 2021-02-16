@@ -1,7 +1,11 @@
+<br>
+<img src="../ab.JPG" width="200" height="50" style="justify-content: center;"><br><br>
 <div class="row mt-5">
   <div class="col-md-6 m-auto">
     <div class="card card-body">
-      <h1 class="text-center mb-3"><i class="fas fa-sign-in-alt"></i>  Login</h1>
+      <h1 class="text-center mb-3" style="color:#4d4144;"><i class="fas fa-sign-in-alt"></i> Welcome To Daksh !</h1>
+      <br>
+      <h1 class="text-center mb-3" style="color:#9e3a55;"><i class="fas fa-sign-in-alt"></i>  Login</h1>
       <% include ./partials/messages %>
       <form action="/users/login" method="POST">
         <div class="form-group">
@@ -24,10 +28,10 @@
             placeholder="Enter Password"
           />
         </div>
-        <button type="submit" class="btn btn-primary btn-block">Login</button>
+        <button type="submit" class="btn btn-danger btn-block">Login</button>
       </form>
       <p class="lead mt-4">
-        No Account? <a href="/users/register">Register</a>
+        No Account? <a style="color: #9e3a55;" href="/users/register">Register</a>
       </p>
     </div>
   </div>

@@ -9,14 +9,25 @@
     <script src="WebRtcShitBlt.js"></script>
     <title>WebRTC | Daksh</title>
 </head>
-<body>
+<body >
+    <br>
+
+    <img src="ab.JPG" width="200" height="50" style="justify-content: center;"><br><br>
 
     <div id="main" style="text-align: center;">
 
         <div class="container" id="container">
 
             <div class="row no-gutters" id="stream1">
-                <video id="local" class="col" autoplay muted></video>
+                <div class="video-wrapper">
+                    <video style='border: 3px solid #9e3a55;' id="local" class="col" autoplay muted></video>
+                    <div class="video-description">
+                        <a href="#">
+                            <img class="img-responsive" width="90" height="90" src="logo1r.png" alt="Logo" scale="0">
+                        </a>
+                    </div>
+                </div>
+                   
             </div>
     
             <div class="row no-gutters" id="stream2">
@@ -32,41 +43,43 @@
         </div>
     
         <div class="container" style="text-align: center;" id="btns">
-            <input type="button" class="btn btn-primary" value="Call" id="call">
-            <input type="button" class="btn btn-success" value="Receive" id="receive">
+            <input type="button" class="btn btn-danger" value="Join Meeting" id="call">
+            <input type="button" class="btn btn-danger" value="Receive" id="receive">
     
-            <input type="button" class="btn btn-info" value="Mute" id="mute">
-            <input type="button" class="btn btn-info" value="Unmute" id="unmute">
+            <input type="button" class="btn btn-danger" value="Mute" id="mute">
+            <input type="button" class="btn btn-danger" value="Unmute" id="unmute">
     
-            <input type="button" class="btn btn-danger" value="Hang Up" id="hangup">
+            <input type="button" class="btn btn-success" value="Hang Up" id="hangup">
         </div>
         <div class="container" style="text-align: center;" id="btns">
-            <input type="button" class="btn btn-info" value="Video Off" id="vd_off">
-            <input type="button" class="btn btn-info" value="Video On" id="vd_on">
+            <input type="button" class="btn btn-danger" value="Video Off" id="vd_off">
+            <input type="button" class="btn btn-danger" value="Video On" id="vd_on">
             
-            <input type="button" class="btn btn-info" value="Screen Share Off" id="ss_off">
-            <input type="button" class="btn btn-info" value="Screen Share On" id="ss_on">
+            <input type="button" class="btn btn-danger" value="Screen Share Off" id="ss_off">
+            <input type="button" class="btn btn-danger" value="Screen Share On" id="ss_on">
         </div>
         <div class="container" style="text-align: center;" id="btns">
-            <input type="button" class="btn btn-info" value="Green Screen On" id="gs_on">
-            <input type="button" class="btn btn-info" value="Green Screen Off" id="gs_off">
-            <input type="button" class="btn btn-info" value="Chat Show" id="chat_on">
+            <input type="button" class="btn btn-danger" value="Green Screen On" id="gs_on">
+            <input type="button" class="btn btn-danger" value="Green Screen Off" id="gs_off">
         </div>
         <div class="container" style="text-align: center;" id="btns">
-            <button class="btn btn-info" id="record" >Start Recording</button>
-            <button class="btn btn-info" id="play" >Play</button>
-            <button class="btn btn-info" id="download" >Download</button>
-        </div>
+            
+            <input type="button" class="btn btn-danger" value="Chat Show" id="chat_on">
 
+            <!-- recording buttons-->
+        <button id="record" >Start Recording</button>
+        <button id="play" >Play</button>
+        <button id="download" >Download</button>
+        </div>
     </div>
 
-    <svg id="info_icon" onmouseover="show()" onmouseout="hide()" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+    <svg id="info_icon" onmouseover="show()" onmouseout="hide()" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-info-circle-fill" fill="#9e3a55" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
     
     <div id="info">
 
-        <span>Room Name<h1 id="room-name"></h1></span>
+        <span>Room Name:<h1 id="room-name"></h1></span>
 
-        <span>Connected Users<ul id="users"></ul></span>
+        <span>Meeting Members:<u3 id="users"></u3></span>
 
     </div>
 
@@ -90,7 +103,7 @@
         <div class="row mt-5">
             <div class="col-md-6 m-auto">
               <div class="card card-body">
-                <h1 class="text-center mb-3">Welcome to Daksh!!</h1>
+                <h1 class="text-center mb-3">Enter Meeting Lobby</h1>
                 <% include ./partials/messages %>
                   <div class="form-group">
                     <label for="email">Username</label>
@@ -100,7 +113,7 @@
                     <label for="password">Room name</label>
                     <input id="room" class="form-control" placeholder="Enter Room name"/>
                   </div>
-                  <button type="button" id="go" class="btn btn-primary">Go</button>
+                  <button type="button" id="go" class="btn btn-danger">Go</button>
               </div>
             </div>
           </div>
