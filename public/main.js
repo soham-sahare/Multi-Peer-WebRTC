@@ -261,6 +261,9 @@ socket.on("request_call", (id) => {
     receive.setAttribute("value", "Connecting...")
     socket.emit("response_call", id)
     makePeer(id)
+    document.getElementById("misc").style.display = "block"
+    document.getElementById("info_icon").style.display = "block"
+
     //}
 })
 
@@ -268,6 +271,10 @@ socket.on("response_call", (id) => {
 
     if (peer[id] == null) {
         makePeerLocal(id)
+        document.getElementById("misc").style.display = "block"
+        document.getElementById("info_icon").style.display = "block"
+
+
     }
 })
 
@@ -284,8 +291,6 @@ function makePeer(id) {
     remote.setAttribute("id", id)
     remote.setAttribute("class", "col")
     remote.setAttribute("autoplay", true)
-    remote.setAttribute("style", "border: 3px solid #9e3a55; justify-content: left;")
-    //remote.setAttribute("width","40%")
 
     const top = document.getElementById("stream1")
     const bottom = document.getElementById("stream2")
@@ -521,7 +526,6 @@ document.getElementById("go").onclick = () => {
 
         document.getElementById("names").style.display = "none"
         document.getElementById("main").style.display = "block"
-        document.getElementById("info_icon").style.display = "block"
 
         //socket.emit("request_call", { username, room_name })
         // socket.emit("joinRoom", { username, room_name })

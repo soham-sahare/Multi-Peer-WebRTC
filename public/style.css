@@ -29,6 +29,10 @@ body {
           justify-content: center;
 }
 
+#misc{
+    display: none;
+}
+
 /* Optional -- Wrap Logo with h3 to style it.*/
 
 .video-description h3 {
